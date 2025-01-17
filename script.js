@@ -1,367 +1,387 @@
-/* 基本設定 */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+// データの初期化
+let currentExercise = 'situp';
+let exercises = {
+    situp: { total: 0, history: [], rankings: {}, unit: '回' },
+    backex: { total: 0, history: [], rankings: {}, unit: '回' },
+    lunge: { total: 0, history: [], rankings: {}, unit: 'm' }
+};
+
+// ページ読み込み時の処理
+document.addEventListener('DOMContentLoaded', () => {
+    // タブ切り替えのイベントリスナーを設定
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const exercise = this.getAttribute('data-exercise');
+            switchTab(exercise);
+        });
+    });
+
+    // 初期表示の更新
+    updateDisplay();
+});
+
+// タブの切り替え
+function switchTab(exercise) {
+    // 現在の種目を更新
+    currentExercise = exercise;
+
+    // タブのアクティブ状態を更新
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('active');
+    });
+    document.querySelector(`[data-exercise="${exercise}"]`).classList.add('active');
+
+    // コンテンツの表示を切り替え
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    document.getElementById(exercise).classList.add('active');
+
+    // 表示を更新
+    updateDisplay();
+
+    // グラフを更新
+    updateChart();
 }
 
-body {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    margin: 0;
-    padding: 20px;
-    background-color: #f0f0f0;
-    line-height: 1.6;
-    color: #333;
-}
+// 記録の追加
+function addRecord(exercise, unit) {
+    const nameInput = document.getElementById(`nameInput_${exercise}`);
+    const numberInput = document.getElementById(`numberInput_${exercise}`);
+    const name = nameInput.value.trim();
+    const number = parseInt(numberInput.value);
 
-/* コンテナ */
-.container {
-    max-width: 1000px;
-    margin: 0 auto;
-    background-color: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.1);
-}
-
-/* ヘッダー */
-h1 {
-    text-align: center;
-    color: #2c3e50;
-    margin-bottom: 30px;
-    padding-bottom: 15px;
-    border-bottom: 3px solid #3498db;
-    font-size: 2.2em;
-}
-
-h2 {
-    color: #2c3e50;
-    margin-top: 20px;
-    margin-bottom: 15px;
-    font-size: 1.8em;
-}
-
-/* タブメニュー */
-.tab-menu {
-    margin: 20px 0;
-    border-bottom: 2px solid #3498db;
-    display: flex;
-    gap: 5px;
-}
-
-.tab-button {
-    padding: 12px 25px;
-    font-size: 16px;
-    background-color: #f0f0f0;
-    border: none;
-    border-radius: 8px 8px 0 0;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.tab-button:hover {
-    background-color: #e0e0e0;
-}
-
-.tab-button.active {
-    background-color: #3498db;
-    color: white;
-    font-weight: bold;
-}
-
-/* タブコンテンツ */
-.tab-content {
-    display: none;
-    padding: 25px;
-    background-color: #fff;
-    border-radius: 0 0 8px 8px;
-}
-
-.tab-content.active {
-    display: block;
-    animation: fadeIn 0.3s ease-in-out;
-}
-
-/* 入力セクション */
-.input-section {
-    margin: 20px 0;
-    padding: 25px;
-    background-color: #f8f9fa;
-    border-radius: 12px;
-    display: flex;
-    gap: 20px;
-    align-items: flex-end;
-}
-
-.input-group {
-    flex: 1;
-}
-
-label {
-    display: block;
-    margin-bottom: 8px;
-    color: #2c3e50;
-    font-weight: 500;
-}
-
-input[type="text"],
-input[type="number"] {
-    width: 100%;
-    padding: 12px 15px;
-    font-size: 16px;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-input[type="text"]:focus,
-input[type="number"]:focus {
-    outline: none;
-    border-color: #3498db;
-    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
-}
-
-button {
-    padding: 12px 30px;
-    font-size: 16px;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 500;
-}
-
-button:hover {
-    background-color: #2980b9;
-    transform: translateY(-2px);
-}
-
-/* グラフセクション */
-.graphs-section {
-    margin: 30px 0;
-    padding: 25px;
-    background-color: #f8f9fa;
-    border-radius: 12px;
-}
-
-/* 結果セクション */
-.result-section {
-    margin: 30px 0;
-    padding: 25px;
-    background-color: #e8f4f8;
-    border-radius: 12px;
-    text-align: center;
-}
-
-.total-display {
-    font-size: 2.5em;
-    font-weight: bold;
-    color: #2980b9;
-}
-
-/* ランキングセクション */
-.ranking-section {
-    margin: 30px 0;
-    padding: 25px;
-    background-color: #f8f9fa;
-    border-radius: 12px;
-}
-
-.ranking-list {
-    padding: 10px;
-}
-
-.ranking-item {
-    padding: 15px 20px;
-    margin: 10px 0;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: transform 0.2s ease;
-}
-
-.ranking-item:hover {
-    transform: translateY(-2px);
-}
-
-.ranking-item.top {
-    background-color: #fff8e1;
-    border-left: 4px solid #ffd700;
-}
-
-/* 履歴セクション */
-.history-section {
-    margin: 30px 0;
-}
-
-.history-list {
-    max-height: 500px;
-    overflow-y: auto;
-    padding: 15px;
-    background-color: #f8f9fa;
-    border-radius: 12px;
-}
-
-.history-item {
-    padding: 15px 20px;
-    margin: 10px 0;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* スクロールバーのカスタマイズ */
-.history-list::-webkit-scrollbar {
-    width: 8px;
-}
-
-.history-list::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-}
-
-.history-list::-webkit-scrollbar-thumb {
-    background: #bdc3c7;
-    border-radius: 4px;
-}
-
-.history-list::-webkit-scrollbar-thumb:hover {
-    background: #95a5a6;
-}
-
-/* アニメーション */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
+    // 入力値のチェック
+    if (name === '') {
+        alert('名前を入力してください');
+        return;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    if (!number || number <= 0) {
+        alert('有効な数値を入力してください');
+        return;
+    }
+
+    // 現在の日時を取得
+    const now = new Date();
+    const dateStr = formatDate(now);
+    const timeStr = formatTime(now);
+
+    // 記録を作成
+    const record = {
+        name: name,
+        number: number,
+        date: dateStr,
+        time: timeStr
+    };
+
+    // 記録を追加
+    if (!exercises[exercise].history) {
+        exercises[exercise].history = [];
+    }
+    exercises[exercise].history.unshift(record);
+    if (exercises[exercise].history.length > 30) {
+        exercises[exercise].history.pop();
+    }
+
+    // ランキングを更新
+    if (!exercises[exercise].rankings[name]) {
+        exercises[exercise].rankings[name] = 0;
+    }
+    exercises[exercise].rankings[name] += number;
+    exercises[exercise].total += number;
+
+    // 表示を更新
+    updateDisplay();
+
+    // 入力欄をクリア
+    numberInput.value = '';
+
+    // 成功メッセージを表示
+    showMessage('記録を保存しました！', 'success');
+
+    // LocalStorageにデータを保存
+    saveToLocalStorage();
+    // グラフを更新
+    updateChart();
+}
+
+// 表示の更新
+function updateDisplay() {
+    const exercise = exercises[currentExercise];
+
+    // 合計の更新
+    document.getElementById('total').textContent = exercise.total.toLocaleString();
+    document.getElementById('unit').textContent = exercise.unit;
+
+    // ランキングの更新
+    updateRanking(exercise);
+
+    // 履歴の更新
+    updateHistory(exercise);
+}
+
+// ランキングの更新
+function updateRanking(exercise) {
+    const rankingDiv = document.getElementById('ranking');
+    rankingDiv.innerHTML = '';
+
+    const rankingArray = Object.entries(exercise.rankings)
+        .map(([name, total]) => ({name, total}))
+        .sort((a, b) => b.total - a.total);
+
+    rankingArray.forEach((item, index) => {
+        const rankingItem = document.createElement('div');
+        rankingItem.className = `ranking-item${index < 3 ? ' top' : ''}`;
+
+        const medal = index < 3 ? ['🥇', '🥈', '🥉'][index] : `${index + 1}位`;
+        rankingItem.innerHTML = `
+            <div class="ranking-content">
+                <span class="ranking-position">${medal}</span>
+                <span class="ranking-name">${item.name}</span>
+                <span class="ranking-score">${item.total.toLocaleString()}${exercise.unit}</span>
+            </div>
+        `;
+        rankingDiv.appendChild(rankingItem);
+    });
+}
+
+// 履歴の更新
+function updateHistory(exercise) {
+    const historyDiv = document.getElementById('history');
+    historyDiv.innerHTML = '';
+
+    exercise.history.forEach(record => {
+        const historyItem = document.createElement('div');
+        historyItem.className = 'history-item';
+        historyItem.innerHTML = `
+            <div class="history-content">
+                <div class="history-date">${record.date} ${record.time}</div>
+                <div class="history-detail">
+                    <span class="history-name">${record.name}</span>さんが
+                    <span class="history-number">${record.number.toLocaleString()}${exercise.unit}</span>
+                    実施
+                </div>
+            </div>
+        `;
+        historyDiv.appendChild(historyItem);
+    });
+}
+
+// LocalStorageにデータを保存
+function saveToLocalStorage() {
+    localStorage.setItem('exerciseData', JSON.stringify(exercises));
+}
+
+// LocalStorageからデータを読み込む
+function loadFromLocalStorage() {
+    const savedData = localStorage.getItem('exerciseData');
+    if (savedData) {
+        exercises = JSON.parse(savedData);
+        updateDisplay();
     }
 }
 
-/* メッセージスタイル */
-.message {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 15px 25px;
-    border-radius: 5px;
-    color: white;
-    font-weight: bold;
-    animation: slideIn 0.5s ease-out;
-    z-index: 1000;
+// ユーティリティ関数
+function formatDate(date) {
+    return `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`;
 }
 
-.message-success {
-    background-color: #2ecc71;
+function formatTime(date) {
+    return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 }
 
-.message-error {
-    background-color: #e74c3c;
+function showMessage(message, type) {
+    const existingMessage = document.querySelector('.message');
+    if (existingMessage) {
+        existingMessage.remove();
+    }
+
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message message-${type}`;
+    messageDiv.textContent = message;
+    document.body.appendChild(messageDiv);
+
+    setTimeout(() => {
+        messageDiv.remove();
+    }, 3000);
+}
+// グラフの初期化
+let activityChart;
+
+// グラフの初期化関数
+function initializeChart() {
+    const ctx = document.getElementById('activityChart').getContext('2d');
+    activityChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [], // 日付ラベル
+            datasets: [{
+                label: '1日の合計',
+                data: [], // データポイント
+                borderColor: '#3498db',
+                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: '回数'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: '日付'
+                    }
+                }
+            }
+        }
+    });
 }
 
-@keyframes slideIn {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
+// グラフの表示期間
+let graphPeriod = 7; // デフォルトは7日間
+
+// グラフの更新関数
+function updateChart() {
+    const today = new Date();
+    const labels = [];
+    const data = [];
+
+    // 指定された日数分のデータを準備
+    for (let i = graphPeriod - 1; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(date.getDate() - i);
+        const dateStr = formatDate(date);
+        labels.push(dateStr);
+
+        // その日の合計を計算
+        const dayTotal = exercises[currentExercise].history
+            .filter(record => record.date === dateStr)
+            .reduce((sum, record) => sum + record.number, 0);
+
+        data.push(dayTotal);
     }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
+
+    // グラフの更新
+    activityChart.data.labels = labels;
+    activityChart.data.datasets[0].data = data;
+    activityChart.options.scales.y.title.text =
+        currentExercise === 'lunge' ? '距離(m)' : '回数';
+    activityChart.update();
 }
 
-/* レスポンシブデザイン */
-@media (max-width: 768px) {
-    .container {
-        padding: 15px;
-    }
+// グラフ期間切り替えの処理を追加
+function setupGraphPeriodButtons() {
+    document.querySelectorAll('.period-button').forEach(button => {
+        button.addEventListener('click', function() {
+            // アクティブなボタンの更新
+            document.querySelectorAll('.period-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            this.classList.add('active');
 
-    .input-section {
-        flex-direction: column;
-        gap: 15px;
-    }
+            // 期間の更新
+            graphPeriod = parseInt(this.getAttribute('data-days'));
+            updateChart();
+        });
+    });
+}
 
-    .input-group {
-        width: 100%;
-    }
-
-    button {
-        width: 100%;
-    }
-
-    .tab-button {
-        padding: 8px 15px;
-        font-size: 14px;
-    }
-// パスワード設定
+// 初期化関連の機能
 const RESET_PASSWORD = 'MaboDofu123';
 
-// 初期化関連の要素を取得
-const resetButton = document.getElementById('resetButton');
-const resetModal = document.getElementById('resetModal');
-const resetPassword = document.getElementById('resetPassword');
-const confirmReset = document.getElementById('confirmReset');
-const cancelReset = document.getElementById('cancelReset');
+// 初期化ボタンのイベントリスナー設定
+function setupResetButton() {
+    const resetButton = document.getElementById('resetButton');
+    const resetModal = document.getElementById('resetModal');
+    const confirmReset = document.getElementById('confirmReset');
+    const cancelReset = document.getElementById('cancelReset');
 
-// 初期化ボタンのイベントリスナー
-resetButton.addEventListener('click', () => {
-    resetModal.style.display = 'block';
-    resetPassword.value = ''; // パスワード入力欄をクリア
-});
+    resetButton.addEventListener('click', () => {
+        resetModal.style.display = 'block';
+    });
 
-// キャンセルボタンのイベントリスナー
-cancelReset.addEventListener('click', () => {
-    resetModal.style.display = 'none';
-});
-
-// モーダルの外側をクリックした時に閉じる
-resetModal.addEventListener('click', (e) => {
-    if (e.target === resetModal) {
+    cancelReset.addEventListener('click', () => {
         resetModal.style.display = 'none';
-    }
-});
+    });
 
-// 初期化実行
-confirmReset.addEventListener('click', () => {
-    if (resetPassword.value === RESET_PASSWORD) {
-        // Firebaseのデータを初期化
-        db.ref('records').remove()
-            .then(() => {
-                // ローカルのデータを初期化
-                exercises = {
-                    situp: { total: 0, history: [], rankings: {}, unit: '回' },
-                    backex: { total: 0, history: [], rankings: {}, unit: '回' },
-                    lunge: { total: 0, history: [], rankings: {}, unit: 'm' }
-                };
+    // モーダルの外側をクリックした時に閉じる
+    resetModal.addEventListener('click', (e) => {
+        if (e.target === resetModal) {
+            resetModal.style.display = 'none';
+        }
+    });
 
-                // グラフを初期化
-                weeklyChart.data.datasets[0].data = [0, 0, 0, 0, 0, 0, 0];
-                weeklyChart.update();
-
-                // 表示を更新
-                updateDisplay();
-                
-                // モーダルを閉じる
-                resetModal.style.display = 'none';
-                
-                // 成功メッセージを表示
-                showMessage('すべての記録を初期化しました', 'success');
-            })
-            .catch(error => {
-                showMessage('初期化中にエラーが発生しました', 'error');
-                console.error('Reset error:', error);
-            });
-    } else {
-        showMessage('パスワードが正しくありません', 'error');
-    }
-});
-
-    .total-display {
-        font-size: 2em;
-    }
+    confirmReset.addEventListener('click', () => {
+        const password = document.getElementById('resetPassword').value;
+        if (password === RESET_PASSWORD) {
+            resetAllData();
+        } else {
+            showMessage('パスワードが正しくありません', 'error');
+        }
+    });
 }
+
+// データのリセット
+function resetAllData() {
+    exercises = {
+        situp: { total: 0, history: [], rankings: {}, unit: '回' },
+        backex: { total: 0, history: [], rankings: {}, unit: '回' },
+        lunge: { total: 0, history: [], rankings: {}, unit: 'm' }
+    };
+
+    // LocalStorageのクリア
+    localStorage.removeItem('exerciseData');
+
+    // 表示の更新
+    updateDisplay();
+    updateChart();
+
+    // モーダルを閉じる
+    document.getElementById('resetModal').style.display = 'none';
+
+    showMessage('すべての記録を初期化しました', 'success');
+}
+document.addEventListener('DOMContentLoaded', () => {
+    // グラフの初期化
+    initializeChart();
+
+    // グラフ期間切り替えボタンの設定
+    setupGraphPeriodButtons();
+
+    // タブ切り替えのイベントリスナーを設定
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const exercise = this.getAttribute('data-exercise');
+            switchTab(exercise);
+        });
+    });
+
+    // 初期化ボタンの設定
+    setupResetButton();
+
+    // 初期データの読み込みと表示の更新
+    loadFromLocalStorage();
+    updateDisplay();
+    updateChart();
+});
+
+// 初期データの読み込み
+loadFromLocalStorage();
