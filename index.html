@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>運動記録カウンター</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>運動記録カウンター</h1>
+
+        <!-- タブメニュー -->
+        <div class="tab-menu">
+            <button class="tab-button active" data-exercise="situp">腹筋</button>
+            <button class="tab-button" data-exercise="backex">背筋</button>
+            <button class="tab-button" data-exercise="lunge">ランジ</button>
+       </div>
+
+        <!-- 腹筋タブ -->
+        <div id="situp" class="tab-content active">
+            <h2>腹筋カウンター</h2>
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="nameInput_situp">名前</label>
+                    <input type="text" id="nameInput_situp" placeholder="名前を入力" required>
+                </div>
+                <div class="input-group">
+                    <label for="numberInput_situp">回数</label>
+                    <input type="number" id="numberInput_situp" placeholder="回数を入力" required>
+                </div>
+                <button onclick="addRecord('situp', '回')">記録する</button>
+            </div>
+        </div>
+
+        <!-- 背筋タブ -->
+        <div id="backex" class="tab-content">
+            <h2>背筋カウンター</h2>
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="nameInput_backex">名前</label>
+                    <input type="text" id="nameInput_backex" placeholder="名前を入力" required>
+                </div>
+                <div class="input-group">
+                    <label for="numberInput_backex">回数</label>
+                    <input type="number" id="numberInput_backex" placeholder="回数を入力" required>
+                </div>
+                <button onclick="addRecord('backex', '回')">記録する</button>
+            </div>
+        </div>
+
+        <!-- ランジタブ -->
+        <div id="lunge" class="tab-content">
+            <h2>ランジ距離カウンター</h2>
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="nameInput_lunge">名前</label>
+                    <input type="text" id="nameInput_lunge" placeholder="名前を入力" required>
+                </div>
+                <div class="input-group">
+                    <label for="numberInput_lunge">距離</label>
+                    <input type="number" id="numberInput_lunge" placeholder="距離(m)を入力" required>
+                </div>
+                <button onclick="addRecord('lunge', 'm')">記録する</button>
+            </div>
+        </div>
+
+        <!-- 共通の表示エリア -->
+        <div class="display-area">
+            <div class="result-section">
+                <h2>現在の合計</h2>
+                <div class="total-display">
+                    <span id="total">0</span>
+                    <span id="unit">回</span>
+                </div>
+            </div>
+
+            <div class="ranking-section">
+                <h2>累計ランキング</h2>
+                <div id="ranking" class="ranking-list"></div>
+            </div>
+
+            <div class="history-section">
+                <h2>履歴（最新30件）</h2>
+                <div id="history" class="history-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
