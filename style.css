@@ -138,6 +138,14 @@ button:hover {
     transform: translateY(-2px);
 }
 
+/* グラフセクション */
+.graphs-section {
+    margin: 30px 0;
+    padding: 25px;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+}
+
 /* 結果セクション */
 .result-section {
     margin: 30px 0;
