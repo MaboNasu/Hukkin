@@ -93,6 +93,23 @@
                 <div id="history" class="history-list"></div>
             </div>
         </div>
+        <!-- 初期化ボタン -->
+<div class="reset-section">
+    <button id="resetButton" class="reset-button">記録を初期化</button>
+</div>
+
+<!-- 初期化確認モーダル -->
+<div id="resetModal" class="modal">
+    <div class="modal-content">
+        <h2>記録の初期化</h2>
+        <p>初期化するにはパスワードを入力してください</p>
+        <input type="password" id="resetPassword" placeholder="パスワードを入力">
+        <div class="modal-buttons">
+            <button id="confirmReset" class="danger-button">初期化する</button>
+            <button id="cancelReset" class="cancel-button">キャンセル</button>
+        </div>
+    </div>
+</div>
     </div>
 
     <!-- Firebase SDK -->
