@@ -298,6 +298,86 @@ button:hover {
         padding: 8px 15px;
         font-size: 14px;
     }
+    /* 初期化ボタン */
+.reset-section {
+    margin: 30px 0;
+    text-align: center;
+}
+
+.reset-button {
+    background-color: #e74c3c;
+    padding: 12px 30px;
+    font-size: 16px;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.reset-button:hover {
+    background-color: #c0392b;
+}
+
+/* モーダル */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    width: 90%;
+    max-width: 400px;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    color: #e74c3c;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 12px;
+    margin: 20px 0;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.danger-button {
+    background-color: #e74c3c;
+}
+
+.danger-button:hover {
+    background-color: #c0392b;
+}
+
+.cancel-button {
+    background-color: #95a5a6;
+}
+
+.cancel-button:hover {
+    background-color: #7f8c8d;
+}
 
     .total-display {
         font-size: 2em;
