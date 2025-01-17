@@ -11,7 +11,7 @@
 <body>
     <div class="container">
         <h1>運動記録カウンター</h1>
-        
+
         <!-- タブメニュー -->
         <div class="tab-menu">
             <button class="tab-button active" data-exercise="situp">腹筋</button>
@@ -69,53 +69,99 @@
 
         <!-- 共通の表示エリア -->
         <div class="display-area">
-            <div class="result-section">
-                <h2>現在の合計</h2>
-                <div class="total-display">
-                    <span id="total">0</span>
-                    <span id="unit">回</span>
+            <!-- 期間選択タブ -->
+            <div class="period-tabs">
+                <button class="period-tab active" data-period="week">週間</button>
+                <button class="period-tab" data-period="month">月間</button>
+                <button class="period-tab" data-period="all">全期間</button>
+            </div>
+
+            <!-- 集計情報セクション -->
+            <div class="summary-section">
+                <div class="summary-card total">
+                    <h3>現在の合計</h3>
+                    <div class="total-display">
+                        <span id="total">0</span>
+                        <span id="unit">回</span>
+                    </div>
+                </div>
+
+                <div class="summary-card comparison">
+                    <h3>前期間比較</h3>
+                    <div class="comparison-display">
+                        <div class="prev-period">
+                            前週: <span id="prevPeriodTotal">0</span>
+                            <span class="comparison-rate" id="comparisonRate">(--%)</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- グラフセクション -->
-            <div class="graphs-section">
-                <h2>週間活動グラフ</h2>
-                <canvas id="weeklyActivityChart"></canvas>
+            <div class="graph-section">
+                <div class="graph-header">
+                    <h2>活動推移</h2>
+                    <div class="graph-period-selector">
+                        <button class="period-button active" data-days="7">7日間</button>
+                        <button class="period-button" data-days="14">14日間</button>
+                        <button class="period-button" data-days="30">30日間</button>
+                    </div>
+                </div>
+                <div class="graph-container">
+                    <canvas id="activityChart"></canvas>
+                </div>
+                <div class="graph-summary">
+                    <div class="summary-item">
+                        <span class="label">期間合計:</span>
+                        <span class="value" id="periodTotal">0</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">1日平均:</span>
+                        <span class="value" id="dailyAverage">0</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">最高記録:</span>
+                        <span class="value" id="maxRecord">0</span>
+                    </div>
+                </div>
             </div>
 
+            <!-- ランキングセクション -->
             <div class="ranking-section">
-                <h2>週間ランキング</h2>
+                <h2>ランキング</h2>
                 <div id="ranking" class="ranking-list"></div>
             </div>
 
+            <!-- 履歴セクション -->
             <div class="history-section">
                 <h2>履歴（最新30件）</h2>
                 <div id="history" class="history-list"></div>
             </div>
         </div>
-        <!-- 初期化ボタン -->
-<div class="reset-section">
-    <button id="resetButton" class="reset-button">記録を初期化</button>
-</div>
 
-<!-- 初期化確認モーダル -->
-<div id="resetModal" class="modal">
-    <div class="modal-content">
-        <h2>記録の初期化</h2>
-        <p>初期化するにはパスワードを入力してください</p>
-        <input type="password" id="resetPassword" placeholder="パスワードを入力">
-        <div class="modal-buttons">
-            <button id="confirmReset" class="danger-button">初期化する</button>
-            <button id="cancelReset" class="cancel-button">キャンセル</button>
+        <!-- 初期化ボタン -->
+        <div class="reset-section">
+            <button id="resetButton" class="reset-button">記録を初期化</button>
         </div>
-    </div>
-</div>
+
+        <!-- 初期化確認モーダル -->
+        <div id="resetModal" class="modal">
+            <div class="modal-content">
+                <h2>記録の初期化</h2>
+                <p>初期化するにはパスワードを入力してください</p>
+                <input type="password" id="resetPassword" placeholder="パスワードを入力">
+                <div class="modal-buttons">
+                    <button id="confirmReset" class="danger-button">初期化する</button>
+                    <button id="cancelReset" class="cancel-button">キャンセル</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-    
+
     <!-- メインのJavaScriptファイル -->
     <script src="script.js"></script>
 </body>
