@@ -41,6 +41,12 @@ h2 {
     font-size: 1.8em;
 }
 
+h3 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 1.4em;
+}
+
 /* タブメニュー */
 .tab-menu {
     margin: 20px 0;
@@ -105,7 +111,8 @@ label {
 }
 
 input[type="text"],
-input[type="number"] {
+input[type="number"],
+input[type="password"] {
     width: 100%;
     padding: 12px 15px;
     font-size: 16px;
@@ -115,7 +122,8 @@ input[type="number"] {
 }
 
 input[type="text"]:focus,
-input[type="number"]:focus {
+input[type="number"]:focus,
+input[type="password"]:focus {
     outline: none;
     border-color: #3498db;
     box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
@@ -138,27 +146,113 @@ button:hover {
     transform: translateY(-2px);
 }
 
-/* グラフセクション */
-.graphs-section {
-    margin: 30px 0;
-    padding: 25px;
-    background-color: #f8f9fa;
-    border-radius: 12px;
+/* 期間選択タブ */
+.period-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
-/* 結果セクション */
-.result-section {
-    margin: 30px 0;
-    padding: 25px;
-    background-color: #e8f4f8;
+.period-tab {
+    padding: 8px 20px;
+    border-radius: 20px;
+    background-color: #f0f0f0;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.period-tab.active {
+    background-color: #3498db;
+    color: white;
+}
+
+/* 集計情報セクション */
+.summary-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.summary-card {
+    background-color: #f8f9fa;
+    padding: 20px;
     border-radius: 12px;
-    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .total-display {
     font-size: 2.5em;
     font-weight: bold;
     color: #2980b9;
+    text-align: center;
+}
+
+/* グラフセクション */
+.graph-section {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.graph-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.graph-period-selector {
+    display: flex;
+    gap: 10px;
+}
+
+.period-button {
+    padding: 8px 16px;
+    border: 1px solid #3498db;
+    background: white;
+    color: #3498db;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.period-button.active {
+    background: #3498db;
+    color: white;
+}
+
+.graph-container {
+    height: 300px;
+    margin-bottom: 20px;
+}
+
+.graph-summary {
+    display: flex;
+    justify-content: space-around;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.summary-item {
+    text-align: center;
+}
+
+.summary-item .label {
+    display: block;
+    color: #666;
+    font-size: 0.9em;
+    margin-bottom: 5px;
+}
+
+.summary-item .value {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #2c3e50;
 }
 
 /* ランキングセクション */
@@ -212,23 +306,58 @@ button:hover {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* スクロールバーのカスタマイズ */
-.history-list::-webkit-scrollbar {
-    width: 8px;
+/* 初期化セクション */
+.reset-section {
+    margin: 30px 0;
+    text-align: center;
 }
 
-.history-list::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
+.reset-button {
+    background-color: #e74c3c;
 }
 
-.history-list::-webkit-scrollbar-thumb {
-    background: #bdc3c7;
-    border-radius: 4px;
+.reset-button:hover {
+    background-color: #c0392b;
 }
 
-.history-list::-webkit-scrollbar-thumb:hover {
-    background: #95a5a6;
+/* モーダル */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    width: 90%;
+    max-width: 400px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.danger-button {
+    background-color: #e74c3c;
+}
+
+.cancel-button {
+    background-color: #95a5a6;
 }
 
 /* アニメーション */
@@ -298,88 +427,23 @@ button:hover {
         padding: 8px 15px;
         font-size: 14px;
     }
-    /* 初期化ボタン */
-.reset-section {
-    margin: 30px 0;
-    text-align: center;
-}
-
-.reset-button {
-    background-color: #e74c3c;
-    padding: 12px 30px;
-    font-size: 16px;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.reset-button:hover {
-    background-color: #c0392b;
-}
-
-/* モーダル */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-}
-
-.modal-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.2);
-    width: 90%;
-    max-width: 400px;
-}
-
-.modal-content h2 {
-    margin-top: 0;
-    color: #e74c3c;
-}
-
-.modal-content input {
-    width: 100%;
-    padding: 12px;
-    margin: 20px 0;
-    border: 2px solid #ddd;
-    border-radius: 6px;
-}
-
-.modal-buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-}
-
-.danger-button {
-    background-color: #e74c3c;
-}
-
-.danger-button:hover {
-    background-color: #c0392b;
-}
-
-.cancel-button {
-    background-color: #95a5a6;
-}
-
-.cancel-button:hover {
-    background-color: #7f8c8d;
-}
 
     .total-display {
         font-size: 2em;
+    }
+
+    .graph-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .graph-period-selector {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .graph-summary {
+        flex-direction: column;
+        gap: 15px;
     }
 }
