@@ -298,6 +298,68 @@ button:hover {
         padding: 8px 15px;
         font-size: 14px;
     }
+// パスワード設定
+const RESET_PASSWORD = 'NaboDofu123';
+
+// 初期化関連の要素を取得
+const resetButton = document.getElementById('resetButton');
+const resetModal = document.getElementById('resetModal');
+const resetPassword = document.getElementById('resetPassword');
+const confirmReset = document.getElementById('confirmReset');
+const cancelReset = document.getElementById('cancelReset');
+
+// 初期化ボタンのイベントリスナー
+resetButton.addEventListener('click', () => {
+    resetModal.style.display = 'block';
+    resetPassword.value = ''; // パスワード入力欄をクリア
+});
+
+// キャンセルボタンのイベントリスナー
+cancelReset.addEventListener('click', () => {
+    resetModal.style.display = 'none';
+});
+
+// モーダルの外側をクリックした時に閉じる
+resetModal.addEventListener('click', (e) => {
+    if (e.target === resetModal) {
+        resetModal.style.display = 'none';
+    }
+});
+
+// 初期化実行
+confirmReset.addEventListener('click', () => {
+    if (resetPassword.value === RESET_PASSWORD) {
+        // Firebaseのデータを初期化
+        db.ref('records').remove()
+            .then(() => {
+                // ローカルのデータを初期化
+                exercises = {
+                    situp: { total: 0, history: [], rankings: {}, unit: '回' },
+                    backex: { total: 0, history: [], rankings: {}, unit: '回' },
+                    lunge: { total: 0, history: [], rankings: {}, unit: 'm' }
+                };
+
+                // グラフを初期化
+                weeklyChart.data.datasets[0].data = [0, 0, 0, 0, 0, 0, 0];
+                weeklyChart.update();
+
+                // 表示を更新
+                updateDisplay();
+                
+                // モーダルを閉じる
+                resetModal.style.display = 'none';
+                
+                // 成功メッセージを表示
+                showMessage('すべての記録を初期化しました', 'success');
+            })
+            .catch(error => {
+                showMessage('初期化中にエラーが発生しました', 'error');
+                console.error('Reset error:', error);
+            });
+    } else {
+        showMessage('パスワードが正しくありません', 'error');
+    }
+});
 
     .total-display {
         font-size: 2em;
