@@ -299,7 +299,7 @@ button:hover {
         font-size: 14px;
     }
 // パスワード設定
-const RESET_PASSWORD = 'NaboDofu123';
+const RESET_PASSWORD = 'MaboDofu123';
 
 // 初期化関連の要素を取得
 const resetButton = document.getElementById('resetButton');
