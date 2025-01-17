@@ -16,6 +16,21 @@
             <button class="tab-button" data-exercise="backex">背筋</button>
             <button class="tab-button" data-exercise="lunge">ランジ</button>
        </div>
+        <!-- タブに追加するグラフセクション -->
+       <div class="graphs-section">
+            <div class="graph-container">
+        <!-- 週間活動グラフ -->
+               <canvas id="weeklyActivityChart"></canvas>
+            </div>
+            <div class="graph-container">
+        <!-- 個人進捗グラフ -->
+               <canvas id="personalProgressChart"></canvas>
+            </div>
+            <div class="graph-container">
+        <!-- 時間帯別活動統計 -->
+               <canvas id="timeDistributionChart"></canvas>
+            </div>
+      </div>
 
         <!-- 腹筋タブ -->
         <div id="situp" class="tab-content active">
