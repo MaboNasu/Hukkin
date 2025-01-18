@@ -226,14 +226,12 @@ function updateDisplay() {
     document.getElementById('total').textContent = exercise.total.toLocaleString();
     document.getElementById('unit').textContent = exercise.unit;
     
-    // 目標達成状況の更新
-    updateGoalProgress();
+    // 即時更新に変更
+    updateRanking(exercise);
+    updateHistory(exercise);
     
-    // ランキングと履歴の更新を少し遅延させる
-    setTimeout(() => {
-        updateRanking(exercise);
-        updateHistory(exercise);
-    }, 50);
+    // グラフの更新
+    updateChart();
 }
 
 // 目標達成状況の更新
@@ -258,44 +256,51 @@ function updateGoalProgress() {
 }
 
 // ランキングの更新
+// ランキングの更新
 function updateRanking(exercise) {
+    console.log('Updating ranking...'); // デバッグ用
     const rankingDiv = document.getElementById('ranking');
-    if (!rankingDiv) return; // 要素が存在しない場合は処理をスキップ
-    
-    // 一時的なフラグメントを作成して、DOM操作を最小限に
-    const fragment = document.createDocumentFragment();
+    if (!rankingDiv) {
+        console.error('Ranking div not found');
+        return;
+    }
+
+    rankingDiv.innerHTML = ''; // 既存の内容をクリア
     
     const rankingArray = Object.entries(exercise.rankings)
         .map(([name, total]) => ({name, total}))
         .sort((a, b) => b.total - a.total);
 
+    console.log('Ranking data:', rankingArray); // デバッグ用
+
     rankingArray.forEach((item, index) => {
         const rankingItem = document.createElement('div');
         rankingItem.className = `ranking-item${index < 3 ? ' top' : ''}`;
         
-        const medal = index < 3 ? ['🥇', '🥈', '🥉'][index] : `${index + 1}位`;
         rankingItem.innerHTML = `
             <div class="ranking-content">
-                <span class="ranking-position">${medal}</span>
+                <span class="ranking-position">${index < 3 ? ['🥇', '🥈', '🥉'][index] : `${index + 1}位`}</span>
                 <span class="ranking-name">${item.name}</span>
                 <span class="ranking-score">${item.total.toLocaleString()}${exercise.unit}</span>
             </div>
         `;
-        fragment.appendChild(rankingItem);
+        rankingDiv.appendChild(rankingItem);
     });
-
-    rankingDiv.innerHTML = '';
-    rankingDiv.appendChild(fragment);
 }
 
 // 履歴の更新
 function updateHistory(exercise) {
+    console.log('Updating history...'); // デバッグ用
     const historyDiv = document.getElementById('history');
-    if (!historyDiv) return; // 要素が存在しない場合は処理をスキップ
+    if (!historyDiv) {
+        console.error('History div not found');
+        return;
+    }
+
+    historyDiv.innerHTML = ''; // 既存の内容をクリア
     
-    // 一時的なフラグメントを作成して、DOM操作を最小限に
-    const fragment = document.createDocumentFragment();
-    
+    console.log('History data:', exercise.history); // デバッグ用
+
     exercise.history.forEach(record => {
         const historyItem = document.createElement('div');
         historyItem.className = 'history-item';
@@ -309,11 +314,8 @@ function updateHistory(exercise) {
                 </div>
             </div>
         `;
-        fragment.appendChild(historyItem);
+        historyDiv.appendChild(historyItem);
     });
-
-    historyDiv.innerHTML = '';
-    historyDiv.appendChild(fragment);
 }
 
 // データの保存
