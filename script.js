@@ -318,16 +318,21 @@ function loadData() {
 
 // リアルタイム更新のリスナー
 function setupRealtimeListener() {
+    let updateTimeout;
     db.ref('exercises').on('value', (snapshot) => {
         const data = snapshot.val();
         if (data) {
             exercises = data;
-            updateDisplay();
-            updateChart();
+            
+            // 連続した更新をまとめる
+            clearTimeout(updateTimeout);
+            updateTimeout = setTimeout(() => {
+                updateDisplay();
+                updateChart();
+            }, 100);
         }
     });
 }
-
 // 入力値の検証
 function validateInput(name, number, unit) {
     if (name === '') {
