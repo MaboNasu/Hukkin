@@ -1,4 +1,4 @@
-// Your web app's Firebase configuration
+// Firebaseの設定
 const firebaseConfig = {
   apiKey: "AIzaSyDeeWjIe1eEf9niClALyPyc0s4OWfMAf74",
   authDomain: "exercise-counter-3fe3f.firebaseapp.com",
@@ -12,6 +12,22 @@ const firebaseConfig = {
 // Firebase初期化
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+
+// 目標値の設定
+const goals = {
+    week: {
+        situp: 500,    // 腹筋の週間目標
+        backex: 500,   // 背筋の週間目標
+        lunge: 1000,   // ランジの週間目標（メートル）
+        pullup: 100    // 懸垂の週間目標
+    },
+    month: {
+        situp: 2000,   // 腹筋の月間目標
+        backex: 2000,  // 背筋の月間目標
+        lunge: 4000,   // ランジの月間目標（メートル）
+        pullup: 400    // 懸垂の月間目標
+    }
+};
 
 // データの初期化
 let currentExercise = 'situp';
@@ -31,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeChart();
     setupGraphPeriodButtons();
     setupResetButton();
-
+    
     // タブ切り替えのイベントリスナーを設定
     document.querySelectorAll('.tab-button').forEach(button => {
         button.addEventListener('click', function() {
@@ -105,16 +121,15 @@ function setupGraphPeriodButtons() {
         });
     });
 }
-
 // タブの切り替え
 function switchTab(exercise) {
     currentExercise = exercise;
-
+    
     document.querySelectorAll('.tab-button').forEach(button => {
         button.classList.remove('active');
     });
     document.querySelector(`[data-exercise="${exercise}"]`).classList.add('active');
-
+    
     document.querySelectorAll('.tab-content').forEach(content => {
         content.classList.remove('active');
     });
@@ -173,23 +188,23 @@ function updateChart() {
     const today = new Date();
     const labels = [];
     const data = [];
-
+    
     for (let i = graphPeriod - 1; i >= 0; i--) {
         const date = new Date(today);
         date.setDate(date.getDate() - i);
         const dateStr = formatDate(date);
         labels.push(dateStr);
-
+        
         const dayTotal = exercises[currentExercise].history
             .filter(record => record.date === dateStr)
             .reduce((sum, record) => sum + record.number, 0);
-
+        
         data.push(dayTotal);
     }
 
     activityChart.data.labels = labels;
     activityChart.data.datasets[0].data = data;
-    activityChart.options.scales.y.title.text =
+    activityChart.options.scales.y.title.text = 
         currentExercise === 'lunge' ? '距離(m)' : '回数';
     activityChart.update();
 }
@@ -199,15 +214,37 @@ function updateDisplay() {
     const exercise = exercises[currentExercise];
     document.getElementById('total').textContent = exercise.total.toLocaleString();
     document.getElementById('unit').textContent = exercise.unit;
+    updateGoalProgress();
     updateRanking(exercise);
     updateHistory(exercise);
+}
+
+// 目標達成状況の更新
+function updateGoalProgress() {
+    const exercise = exercises[currentExercise];
+    const currentDate = new Date();
+    const isMonthEnd = currentDate.getDate() === new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+    
+    const goalType = isMonthEnd ? 'month' : 'week';
+    const goal = goals[goalType][currentExercise];
+    const progress = (exercise.total / goal) * 100;
+    
+    document.getElementById('currentGoal').textContent = 
+        `${goal.toLocaleString()}${exercise.unit}`;
+    document.getElementById('achievementRate').textContent = 
+        `${Math.round(progress)}%`;
+    
+    const progressBar = document.getElementById('goalProgress');
+    if (progressBar) {
+        progressBar.style.width = `${Math.min(progress, 100)}%`;
+    }
 }
 
 // ランキングの更新
 function updateRanking(exercise) {
     const rankingDiv = document.getElementById('ranking');
     rankingDiv.innerHTML = '';
-
+    
     const rankingArray = Object.entries(exercise.rankings)
         .map(([name, total]) => ({name, total}))
         .sort((a, b) => b.total - a.total);
@@ -215,7 +252,7 @@ function updateRanking(exercise) {
     rankingArray.forEach((item, index) => {
         const rankingItem = document.createElement('div');
         rankingItem.className = `ranking-item${index < 3 ? ' top' : ''}`;
-
+        
         const medal = index < 3 ? ['🥇', '🥈', '🥉'][index] : `${index + 1}位`;
         rankingItem.innerHTML = `
             <div class="ranking-content">
@@ -232,7 +269,7 @@ function updateRanking(exercise) {
 function updateHistory(exercise) {
     const historyDiv = document.getElementById('history');
     historyDiv.innerHTML = '';
-
+    
     exercise.history.forEach(record => {
         const historyItem = document.createElement('div');
         historyItem.className = 'history-item';
@@ -258,6 +295,7 @@ function saveData() {
         })
         .catch((error) => {
             console.error('Data save failed:', error);
+            showMessage('データの保存に失敗しました', 'error');
         });
 }
 
@@ -274,6 +312,7 @@ function loadData() {
         })
         .catch((error) => {
             console.error('Data load failed:', error);
+            showMessage('データの読み込みに失敗しました', 'error');
         });
 }
 
@@ -341,10 +380,8 @@ function resetAllData() {
         lunge: { total: 0, history: [], rankings: {}, unit: 'm' },
         pullup: { total: 0, history: [], rankings: {}, unit: '回' }
     };
-
-    // Firebaseのデータをリセット
+    
     saveData();
-
     updateDisplay();
     updateChart();
     document.getElementById('resetModal').style.display = 'none';
