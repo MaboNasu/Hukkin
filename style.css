@@ -256,6 +256,25 @@ button:hover {
 }
 
 /* ランキングセクション */
+.ranking-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ranking-position {
+    font-weight: bold;
+    min-width: 40px;
+}
+
+.ranking-name {
+    flex-grow: 1;
+}
+
+.ranking-score {
+    font-weight: bold;
+    color: #2980b9;
+}
 .ranking-section {
     margin: 30px 0;
     padding: 25px;
@@ -286,6 +305,33 @@ button:hover {
 }
 
 /* 履歴セクション */
+.history-content {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.history-date {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.history-detail {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.history-name {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.history-number {
+    font-weight: bold;
+    color: #2980b9;
+}
+
 .history-section {
     margin: 30px 0;
 }
