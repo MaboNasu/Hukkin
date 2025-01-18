@@ -222,21 +222,18 @@ function updateChart() {
 function updateDisplay() {
     const exercise = exercises[currentExercise];
     
-    // 更新を一時的に遅延させる
-    requestAnimationFrame(() => {
-        // 合計の更新
-        document.getElementById('total').textContent = exercise.total.toLocaleString();
-        document.getElementById('unit').textContent = exercise.unit;
-        
-        // 目標達成状況の更新
-        updateGoalProgress();
-        
-        // ランキングと履歴の更新を遅延実行
-        setTimeout(() => {
-            updateRanking(exercise);
-            updateHistory(exercise);
-        }, 100);
-    });
+    // 基本情報の更新
+    document.getElementById('total').textContent = exercise.total.toLocaleString();
+    document.getElementById('unit').textContent = exercise.unit;
+    
+    // 目標達成状況の更新
+    updateGoalProgress();
+    
+    // ランキングと履歴の更新を少し遅延させる
+    setTimeout(() => {
+        updateRanking(exercise);
+        updateHistory(exercise);
+    }, 50);
 }
 
 // 目標達成状況の更新
@@ -262,53 +259,61 @@ function updateGoalProgress() {
 
 // ランキングの更新
 function updateRanking(exercise) {
-    requestAnimationFrame(() => {  // ここに追加
-        const rankingDiv = document.getElementById('ranking');
-        rankingDiv.innerHTML = '';
-        
-        const rankingArray = Object.entries(exercise.rankings)
-            .map(([name, total]) => ({name, total}))
-            .sort((a, b) => b.total - a.total);
+    const rankingDiv = document.getElementById('ranking');
+    if (!rankingDiv) return; // 要素が存在しない場合は処理をスキップ
+    
+    // 一時的なフラグメントを作成して、DOM操作を最小限に
+    const fragment = document.createDocumentFragment();
+    
+    const rankingArray = Object.entries(exercise.rankings)
+        .map(([name, total]) => ({name, total}))
+        .sort((a, b) => b.total - a.total);
 
-        rankingArray.forEach((item, index) => {
-            const rankingItem = document.createElement('div');
-            rankingItem.className = `ranking-item${index < 3 ? ' top' : ''}`;
-            
-            const medal = index < 3 ? ['🥇', '🥈', '🥉'][index] : `${index + 1}位`;
-            rankingItem.innerHTML = `
-                <div class="ranking-content">
-                    <span class="ranking-position">${medal}</span>
-                    <span class="ranking-name">${item.name}</span>
-                    <span class="ranking-score">${item.total.toLocaleString()}${exercise.unit}</span>
-                </div>
-            `;
-            rankingDiv.appendChild(rankingItem);
-        });
-    });  // ここに閉じカッコを追加
+    rankingArray.forEach((item, index) => {
+        const rankingItem = document.createElement('div');
+        rankingItem.className = `ranking-item${index < 3 ? ' top' : ''}`;
+        
+        const medal = index < 3 ? ['🥇', '🥈', '🥉'][index] : `${index + 1}位`;
+        rankingItem.innerHTML = `
+            <div class="ranking-content">
+                <span class="ranking-position">${medal}</span>
+                <span class="ranking-name">${item.name}</span>
+                <span class="ranking-score">${item.total.toLocaleString()}${exercise.unit}</span>
+            </div>
+        `;
+        fragment.appendChild(rankingItem);
+    });
+
+    rankingDiv.innerHTML = '';
+    rankingDiv.appendChild(fragment);
 }
 
 // 履歴の更新
 function updateHistory(exercise) {
-    requestAnimationFrame(() => {  // ここに追加
-        const historyDiv = document.getElementById('history');
-        historyDiv.innerHTML = '';
-        
-        exercise.history.forEach(record => {
-            const historyItem = document.createElement('div');
-            historyItem.className = 'history-item';
-            historyItem.innerHTML = `
-                <div class="history-content">
-                    <div class="history-date">${record.date} ${record.time}</div>
-                    <div class="history-detail">
-                        <span class="history-name">${record.name}</span>さんが
-                        <span class="history-number">${record.number.toLocaleString()}${exercise.unit}</span>
-                        実施
-                    </div>
+    const historyDiv = document.getElementById('history');
+    if (!historyDiv) return; // 要素が存在しない場合は処理をスキップ
+    
+    // 一時的なフラグメントを作成して、DOM操作を最小限に
+    const fragment = document.createDocumentFragment();
+    
+    exercise.history.forEach(record => {
+        const historyItem = document.createElement('div');
+        historyItem.className = 'history-item';
+        historyItem.innerHTML = `
+            <div class="history-content">
+                <div class="history-date">${record.date} ${record.time}</div>
+                <div class="history-detail">
+                    <span class="history-name">${record.name}</span>さんが
+                    <span class="history-number">${record.number.toLocaleString()}${exercise.unit}</span>
+                    実施
                 </div>
-            `;
-            historyDiv.appendChild(historyItem);
-        });
-    });  // ここに閉じカッコを追加
+            </div>
+        `;
+        fragment.appendChild(historyItem);
+    });
+
+    historyDiv.innerHTML = '';
+    historyDiv.appendChild(fragment);
 }
 
 // データの保存
@@ -357,6 +362,7 @@ function setupRealtimeListener() {
         }
     });
 }
+
 // 入力値の検証
 function validateInput(name, number, unit) {
     if (name === '') {
