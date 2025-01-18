@@ -17,6 +17,7 @@
             <button class="tab-button active" data-exercise="situp">腹筋</button>
             <button class="tab-button" data-exercise="backex">背筋</button>
             <button class="tab-button" data-exercise="lunge">ランジ</button>
+            <button class="tab-button" data-exercise="pullup">懸垂</button>
         </div>
 
         <!-- 腹筋タブ -->
@@ -66,6 +67,22 @@
                 <button onclick="addRecord('lunge', 'm')">記録する</button>
             </div>
         </div>
+
+        <!-- 懸垂タブ -->
+        <div id="pullup" class="tab-content">
+    <h2>懸垂カウンター</h2>
+    <div class="input-section">
+        <div class="input-group">
+            <label for="nameInput_pullup">名前</label>
+            <input type="text" id="nameInput_pullup" placeholder="名前を入力" required>
+        </div>
+        <div class="input-group">
+            <label for="numberInput_pullup">回数</label>
+            <input type="number" id="numberInput_pullup" placeholder="回数を入力" required>
+        </div>
+        <button onclick="addRecord('pullup', '回')">記録する</button>
+    </div>
+</div>
 
         <!-- 共通の表示エリア -->
         <div class="display-area">
